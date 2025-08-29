@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner - Lahore to Hunza</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            display: flex;
+            background: #f5f5f5;
+        }
+        
+        .sidebar {
+            width: 40%;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+        
+        .user-message {
+            background: #007AFF;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot-message {
+            background: #f0f0f0;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        
+        /* ChatGPT-style formatting for bot messages */
+        .bot-message h1, .bot-message h2, .bot-message h3, .bot-message h4, .bot-message h5, .bot-message h6 {
+            font-weight: bold;
+            margin: 12px 0 8px 0;
+            color: #2d3748;
+        }
+        
+        .bot-message h1 { font-size: 18px; }
+        .bot-message h2 { font-size: 16px; }
+        .bot-message h3 { font-size: 15px; }
+        .bot-message h4 { font-size: 14px; }
+        
+        .bot-message strong, .bot-message b {
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        .bot-message ul, .bot-message ol {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        
+        .bot-message li {
+            margin: 4px 0;
+            line-height: 1.5;
+        }
+        
+        .bot-message p {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        .bot-message code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .bot-message pre {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .bot-message blockquote {
+            border-left: 4px solid #007AFF;
+            margin: 8px 0;
+            padding-left: 12px;
+            font-style: italic;
+            color: #4a5568;
+        }
+        
+        .input-container {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+        }
+        
+        .gmail-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .gmail-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            outline: none;
+            font-size: 13px;
+            transition: border-color 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .gmail-input:focus {
+            border-color: #28a745;
+            background: white;
+        }
+        
+        .load-history-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+        
+        .load-history-button:hover {
+            background: #218838;
+        }
+        
+        .load-history-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .chat-input:focus {
+            border-color: #007AFF;
+        }
+        
+        .chat-input:disabled {
+            background: #f8f9fa;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .send-button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .send-button:hover:not(:disabled) {
+            background: #0056CC;
+        }
+        
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .session-info {
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        .session-info small {
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .session-info span {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .map-container {
+            flex: 1;
+            width: 60%;
+            position: relative;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Temporary Map Interface Styles */
+        .temp-map-interface {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .map-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .map-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .map-btn {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .map-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+        
+        .map-visual {
+            flex: 1;
+            position: relative;
+            background: #e8f4fd;
+            overflow: hidden;
+        }
+        
+        .map-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(66, 133, 244, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(66, 133, 244, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .location-marker {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+        
+        .location-marker:hover {
+            transform: scale(1.2);
+        }
+        
+        .lahore-marker {
+            top: 45%;
+            left: 40%;
+        }
+        
+        .islamabad-marker {
+            top: 25%;
+            left: 35%;
+        }
+        
+        .karachi-marker {
+            bottom: 20%;
+            left: 30%;
+        }
+        
+        .marker-label {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .route-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .map-center-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 300px;
+        }
+        
+        .compass-icon {
+            animation: spin 8s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .map-center-message h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .map-center-message p {
+            margin: 0 0 15px 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .feature-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid #e0f2fe;
+        }
+        
+        .map-footer {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .zoom-btn {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        
+        .zoom-btn:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .zoom-level {
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .map-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            color: #666;
+            z-index: 100;
+        }
+        
+        .map-placeholder-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 3px solid #007AFF;
+        }
+        
+        .map-placeholder-icon img {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .map-placeholder-text {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .map-icons {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .map-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .map-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-color: #007AFF;
+        }
+        
+        .map-icon img {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .route-info {
+            background: white;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .route-step {
+            margin: 8px 0;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007AFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 16px;
+            background: #f0f0f0;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+            max-width: 85%;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(3) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: 50%; }
+            .map-container { height: 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <h1>🗺️ HighTribe AI Assistant</h1>
+            <p>Plan your journey from anywhere in Pakistan</p>
+        </div>
+        
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <!-- Welcome message will be added via JavaScript -->
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+            
+            <div class="input-container">
+                <div class="gmail-input-wrapper">
+                    <input 
+                        type="email" 
+                        class="gmail-input" 
+                        id="gmailInput" 
+                        placeholder="Enter your Gmail address..."
+                        maxlength="100"
+                        required
+                    >
+                    <button class="load-history-button" id="loadHistoryButton">Load History</button>
+                </div>
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="Ask me anything..."
+                        maxlength="500"
+                        disabled
+                    >
+                    <button class="send-button" id="sendButton" disabled>Send</button>
+                </div>
+                <div class="session-info" id="sessionInfo" style="display: none;">
+                    <small>Session: <span id="currentSession"></span></small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="map-container">
+        <!-- Temporary Attractive Map Interface -->
+        <div class="temp-map-interface">
+            <div class="map-header">
+                <div class="map-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#4285F4">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span>Trip Planner Map</span>
+                </div>
+                <div class="map-controls">
+                    <button class="map-btn" title="Satellite View">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#666">
+                            <path d="M20 6v12H4V6h16m0-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/>
+                            <path d="M12 8h4v4h-4z" fill="#34A853"/>
+                        </svg>
+                    </button>
+                    <button class="map-btn" title="Traffic">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#666">
+                            <path d="M20 10v8c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-8h16zm-6 6c0-.55-.45-1-1-1s-1 .45-1 1 .45 1 1 1 1-.45 1-1zm-6 0c0-.55-.45-1-1-1s-1 .45-1 1 .45 1 1 1 1-.45 1-1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="map-visual">
+                <!-- Map Grid Background -->
+                <div class="map-grid"></div>
+                
+                <!-- Location Markers -->
+                <div class="location-marker lahore-marker" title="Lahore">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="#EA4335">
+                        <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span class="marker-label">Lahore</span>
+                </div>
+                
+                <div class="location-marker islamabad-marker" title="Islamabad">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#34A853">
+                        <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span class="marker-label">Islamabad</span>
+                </div>
+                
+                <div class="location-marker karachi-marker" title="Karachi">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#FBBC04">
+                        <path d="M12 2c-3.87 0-7 3.13-7 7 0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span class="marker-label">Karachi</span>
+                </div>
+                
+                <!-- Route Lines -->
+                <svg class="route-lines" viewBox="0 0 100 100">
+                    <dashed-line stroke="#4285F4" stroke-width="2" stroke-dasharray="5,5" fill="none">
+                        <path d="M30,40 Q50,20 70,35" />
+                        <path d="M30,40 Q40,70 60,80" />
+                    </dashed-line>
+                </svg>
+                
+                <!-- Center Message -->
+                <div class="map-center-message">
+                    <div class="compass-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#4285F4">
+                            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6L16,12L12,18L8,12"/>
+                        </svg>
+                    </div>
+                    <h3>Interactive Map Coming Soon</h3>
+                    <p>Plan your journey from Lahore to anywhere in Pakistan</p>
+                    <div class="feature-badges">
+                        <span class="badge">🗺️ Routes</span>
+                        <span class="badge">📍 Places</span>
+                        <span class="badge">🚗 Traffic</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="map-footer">
+                <div class="coordinates">
+                    <span>📍 Lahore: 31.5204° N, 74.3587° E</span>
+                </div>
+                <div class="zoom-controls">
+                    <button class="zoom-btn">+</button>
+                    <span class="zoom-level">12</span>
+                    <button class="zoom-btn">-</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            API_BASE_URL: window.location.protocol === 'file:' ? 'http://0.0.0.0:8003' : window.location.origin,
+            GOOGLE_MAPS_API_KEY: '{{ google_maps_api_key }}' || 'YOUR_GOOGLE_MAPS_API_KEY_HERE'
+        };
+
+        // Global variables
+        let map;
+        let currentMapType = 'roadmap';
+        let currentGmail = '';
+        let currentSessionId = '';
+        let chatHistory = [];
+
+        // Initialize the application
+        function initApp() {
+            setupEventListeners();
+            
+            // Don't add welcome message initially, wait for Gmail authentication
+            
+            // Initialize Google Maps if available
+            if (typeof google !== 'undefined') {
+                initializeGoogleMap();
+            }
+        }
+
+        // Initialize Google Maps
+        function initializeGoogleMap() {
+            const lahore = { lat: 31.5204, lng: 74.3587 };
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: lahore,
+                mapTypeId: currentMapType,
+            });
+            
+            // Add a marker for Lahore
+            new google.maps.Marker({
+                position: lahore,
+                map: map,
+                title: 'Lahore'
+            });
+        }
+
+        // Toggle map type
+        function toggleMapType() {
+            currentMapType = currentMapType === 'roadmap' ? 'satellite' : 'roadmap';
+            map.setMapTypeId(currentMapType);
+        }
+
+        // Center map on Lahore
+        function centerMapOnLahore() {
+            const lahore = { lat: 31.5204, lng: 74.3587 };
+            map.setCenter(lahore);
+            map.setZoom(10);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            const chatInput = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
+            const gmailInput = document.getElementById('gmailInput');
+            const loadHistoryButton = document.getElementById('loadHistoryButton');
+
+            if (!chatInput || !sendButton || !gmailInput || !loadHistoryButton) {
+                console.error('Required chat elements not found');
+                return;
+            }
+
+            // Gmail input and history loading
+            loadHistoryButton.addEventListener('click', async () => {
+                const gmail = gmailInput.value.trim();
+                if (!gmail || !isValidEmail(gmail)) {
+                    alert('Please enter a valid Gmail address');
+                    return;
+                }
+                await loadUserHistory(gmail);
+            });
+
+            gmailInput.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const gmail = gmailInput.value.trim();
+                    if (gmail && isValidEmail(gmail)) {
+                        await loadUserHistory(gmail);
+                    }
+                }
+            });
+
+            // Chat input handlers
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            sendButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                sendMessage();
+            });
+        }
+
+        // Validate email format
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Load user chat history
+        async function loadUserHistory(gmail) {
+            try {
+                const loadButton = document.getElementById('loadHistoryButton');
+                loadButton.textContent = 'Loading...';
+                loadButton.disabled = true;
+
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/chat/history/${encodeURIComponent(gmail)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentGmail = gmail;
+                
+                // Clear current chat
+                const messagesContainer = document.getElementById('messages');
+                messagesContainer.innerHTML = '';
+
+                // If user has previous sessions, load the most recent one
+                if (data.sessions && data.sessions.length > 0) {
+                    const mostRecentSession = data.sessions[0];
+                    currentSessionId = mostRecentSession.session_id;
+                    await loadSessionMessages(gmail, currentSessionId);
+                } else {
+                    // Create a new session for new users
+                    currentSessionId = generateSessionId();
+                    addMessage('bot', `Welcome to HighTribe! I'm your travel assistant focused on Pakistan. How can I help you plan your journey today?`);
+                }
+
+                // Enable chat interface
+                enableChatInterface();
+                
+                // Update session info
+                updateSessionInfo();
+
+            } catch (error) {
+                console.error('Error loading user history:', error);
+                alert('Failed to load chat history. Please check your connection and try again.');
+            } finally {
+                const loadButton = document.getElementById('loadHistoryButton');
+                loadButton.textContent = 'Load History';
+                loadButton.disabled = false;
+            }
+        }
+
+        // Load specific session messages
+        async function loadSessionMessages(gmail, sessionId) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/chat/session/${encodeURIComponent(gmail)}/${sessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                chatHistory = data.messages || [];
+
+                // Display messages in chat
+                const messagesContainer = document.getElementById('messages');
+                messagesContainer.innerHTML = '';
+
+                for (const message of chatHistory) {
+                    addMessage(message.role === 'user' ? 'user' : 'bot', message.content);
+                }
+
+                // If no messages in session, show welcome message
+                if (chatHistory.length === 0) {
+                    addMessage('bot', `Welcome back to HighTribe! I'm ready to help you with your travel plans in Pakistan. What would you like to know?`);
+                }
+
+            } catch (error) {
+                console.error('Error loading session messages:', error);
+                addMessage('bot', 'Welcome back! I had trouble loading your previous chat, but I\'m ready to help you now.');
+            }
+        }
+
+        // Generate new session ID
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Enable chat interface
+        function enableChatInterface() {
+            const chatInput = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
+            
+            chatInput.disabled = false;
+            sendButton.disabled = false;
+            chatInput.placeholder = "Ask me anything about travel in Pakistan...";
+            chatInput.focus();
+        }
+
+        // Update session info display
+        function updateSessionInfo() {
+            const sessionInfo = document.getElementById('sessionInfo');
+            const currentSession = document.getElementById('currentSession');
+            
+            if (sessionInfo && currentSession) {
+                currentSession.textContent = currentSessionId.substring(0, 8) + '...';
+                sessionInfo.style.display = 'block';
+            }
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message || !currentGmail) {
+                if (!currentGmail) {
+                    alert('Please enter your Gmail address first to start chatting.');
+                }
+                return;
+            }
+            
+            addMessage('user', message);
+            input.value = '';
+            
+            showTypingIndicator();
+            await processUserMessage(message);
+        }
+
+        // Add message to chat
+        function addMessage(sender, text) {
+            const messagesContainer = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            if (sender === 'user') {
+                messageDiv.textContent = text;
+            } else {
+                // Format bot response with proper HTML rendering
+                messageDiv.innerHTML = formatBotResponse(text);
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Format bot response to match ChatGPT styling
+        function formatBotResponse(content) {
+            // Convert markdown-like formatting to HTML
+            let formatted = content
+                // Bold text with **text** or __text__
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                
+                // Headings
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                
+                // Inline code with `code`
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                
+                // Convert newlines to line breaks initially
+                .replace(/\n/g, '<br>');
+            
+            // Handle lists separately
+            let lines = formatted.split('<br>');
+            let result = [];
+            let inList = false;
+            let listItems = [];
+            
+            for (let line of lines) {
+                line = line.trim();
+                
+                // Check if it's a list item (numbered or bullet)
+                if (/^\d+\.\s+/.test(line) || /^[-*]\s+/.test(line)) {
+                    // Extract the list content
+                    let listContent = line.replace(/^\d+\.\s+/, '').replace(/^[-*]\s+/, '');
+                    listItems.push('<li>' + listContent + '</li>');
+                    inList = true;
+                } else {
+                    // If we were in a list and now we're not, close the list
+                    if (inList) {
+                        result.push('<ul>' + listItems.join('') + '</ul>');
+                        listItems = [];
+                        inList = false;
+                    }
+                    // Add the current line if it's not empty
+                    if (line) {
+                        result.push('<p>' + line + '</p>');
+                    }
+                }
+            }
+            
+            // Close any remaining list
+            if (inList) {
+                result.push('<ul>' + listItems.join('') + '</ul>');
+            }
+            
+            return result.join('');
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'flex';
+            const messagesContainer = document.getElementById('messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+        }
+
+        // Process user message with FastAPI backend (streaming)
+        async function processUserMessage(message) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/plain',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        gmail: currentGmail,
+                        session_id: currentSessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                hideTypingIndicator();
+                
+                // Create a new message element for the bot response
+                const messagesContainer = document.getElementById('messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot-message';
+                messagesContainer.appendChild(messageDiv);
+                
+                // Read the stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let accumulatedContent = '';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                
+                                if (data.error) {
+                                    messageDiv.innerHTML = formatBotResponse(data.error);
+                                    break;
+                                } else if (data.session_id && !currentSessionId) {
+                                    // Update session ID if it was generated server-side
+                                    currentSessionId = data.session_id;
+                                    updateSessionInfo();
+                                } else if (data.done) {
+                                    // Stream is complete
+                                    break;
+                                } else if (data.content) {
+                                    accumulatedContent += data.content;
+                                    messageDiv.innerHTML = formatBotResponse(accumulatedContent);
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                }
+                            } catch (e) {
+                                // Ignore malformed JSON
+                                console.warn('Failed to parse SSE data:', line);
+                            }
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error processing message:', error);
+                hideTypingIndicator();
+                addMessage('bot', 'Sorry, I encountered an error. Please try again.');
+            }
+        }
+
+        // Initialize the app when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+
+        // Google Maps callback function
+        function initializeMap() {
+            if (typeof google !== 'undefined') {
+                initializeGoogleMap();
+            } else {
+                console.error('Google Maps API not loaded');
+            }
+        }
+    </script>
+
+    <!-- Load Google Maps API -->
+    <script>
+        // Load Google Maps API dynamically
+        function loadGoogleMapsAPI() {
+            const script = document.createElement('script');
+            const apiKey = '{{ google_maps_api_key }}' || 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initializeMap`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+        
+        // Load the API when the page is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadGoogleMapsAPI);
+        } else {
+            loadGoogleMapsAPI();
+        }
+    </script>
+</body>
+</html>
